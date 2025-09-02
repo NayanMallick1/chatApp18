@@ -41,7 +41,7 @@ This project demonstrates how to build a simple messaging system with a publish/
 ### Installation
 ```bash
 # Clone the repository
-git clone  https://github.com/NayanMallick1/chatApp18.git
+git clone https://github.com/NayanMallick1/chatApp18.git
 
 # Navigate to project
 cd chatApp
