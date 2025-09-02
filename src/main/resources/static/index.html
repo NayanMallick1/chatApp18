@@ -421,7 +421,7 @@
         let onlineStatus = true;
 
         function connect() {
-            const socket = new SockJS('https://43081bcd751d.ngrok-free.app/chat');
+            const socket = new SockJS('https://a9869ff78662.ngrok-free.appff/chat');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
                 console.log('Connected: ' + frame);
