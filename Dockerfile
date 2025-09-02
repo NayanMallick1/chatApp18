@@ -1,14 +1,14 @@
-# Use Java 21
+# Use lightweight Java 21 image
 FROM openjdk:21-jdk-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy pre-built JAR
+# Copy the pre-built JAR
 COPY target/chatApp-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose port
+# Expose port 8080 (Render will override if needed)
 EXPOSE 8080
 
-# Run the app
+# Run the JAR
 CMD ["java", "-jar", "app.jar"]
