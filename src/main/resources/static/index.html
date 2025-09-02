@@ -174,13 +174,23 @@
             text-align: left;
         }
 
-        .typing-indicator {
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            font-style: italic;
-            color: #888;
-            height: 20px;
-        }
+        /* Make chat container relative so absolute positioning works */
+.chat-container {
+    position: relative; /* add this */
+}
+
+/* Position typing indicator just above footer/input */
+.typing-indicator {
+    position: absolute;  /* change from static */
+    bottom: 95px;        /* distance from bottom, adjust as needed */
+    left: 20px;          /* align with chat padding */
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #888;
+    height: 20px;
+    z-index: 10;
+}
+
 
         .typing-indicator span {
             display: inline-block;
@@ -468,21 +478,20 @@
             // Hide typing indicator after sending
             document.getElementById('typing').innerText = '';
         }
-
-        function notifyTyping() {
+function notifyTyping() {
     const sender = document.getElementById('sender').value.trim();
     if (!sender) return;
 
-    // Notify that user is typing
+    currentUser = sender; // set currentUser immediately
+
     stompClient.send("/app/typing", {}, JSON.stringify({ sender: sender, typing: true }));
 
     clearTimeout(typingTimeout);
-
-    // After 2 seconds of inactivity, set typing=false
     typingTimeout = setTimeout(() => {
         stompClient.send("/app/typing", {}, JSON.stringify({ sender: sender, typing: false }));
     }, 2000);
 }
+
 
 
 
@@ -508,10 +517,10 @@
             chatDiv.scrollTop = chatDiv.scrollHeight;
         }
 
-        function showTyping(data) {
+function showTyping(data) {
     const typingDiv = document.getElementById('typing');
 
-    if (data.sender !== currentUser) { // don't show own typing
+    if (data.sender !== currentUser) { // don't show your own typing
         if (data.typing) {
             typingUsers.add(data.sender);
         } else {
@@ -519,14 +528,13 @@
         }
 
         if (typingUsers.size > 0) {
-            typingDiv.innerText = Array.from(typingUsers).join(", ") + " is typing...";
+            // Show users typing with animated dots
+            typingDiv.innerHTML = Array.from(typingUsers).join(", ") + " is typing <span>.</span><span>.</span><span>.</span>";
         } else {
-            typingDiv.innerText = "";
+            typingDiv.innerHTML = "";
         }
     }
 }
-
-
 
         function toggleEmojiPicker() {
             const emojiPicker = document.getElementById('emoji-picker');
