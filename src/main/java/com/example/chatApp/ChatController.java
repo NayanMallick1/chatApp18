@@ -21,4 +21,5 @@ public class ChatController {
     public TypingStatus typing(TypingStatus status) {
         return status;
     }
+    
 }

@@ -433,8 +433,9 @@
                     showMessage(JSON.parse(chatMessage.body));
                 });
                 stompClient.subscribe('/topic/typing', function(typingData) {
-                    showTyping(JSON.parse(typingData.body));
-                });
+    showTyping(JSON.parse(typingData.body));
+});
+
             }, function(error) {
                 console.log('Connection error: ' + error);
                 updateOnlineStatus(false);
@@ -469,20 +470,20 @@
         }
 
         function notifyTyping() {
-            const sender = document.getElementById('sender').value.trim();
-            if (!sender) return;
+    const sender = document.getElementById('sender').value.trim();
+    if (!sender) return;
 
-             // Notify that user is typing
-            stompClient.send("/app/typing", {}, JSON.stringify({ sender: sender, typing: true }));
+    // Notify that user is typing
+    stompClient.send("/app/typing", {}, JSON.stringify({ sender: sender, typing: true }));
 
-            // Clear previous timeout if any
-            clearTimeout(typingTimeout);
+    clearTimeout(typingTimeout);
 
-            // Send typing=false after 2 seconds of inactivity
-            typingTimeout = setTimeout(() => {
-            stompClient.send("/app/typing", {}, JSON.stringify({ sender: sender, typing: false }));
-            }, 2000);
-        }
+    // After 2 seconds of inactivity, set typing=false
+    typingTimeout = setTimeout(() => {
+        stompClient.send("/app/typing", {}, JSON.stringify({ sender: sender, typing: false }));
+    }, 2000);
+}
+
 
 
         function showMessage(message) {
@@ -508,22 +509,23 @@
         }
 
         function showTyping(data) {
-            const typingDiv = document.getElementById('typing');
+    const typingDiv = document.getElementById('typing');
 
-            if (data.sender !== currentUser) { // avoid showing your own typing
-                if (data.typing) {
-                    typingUsers.add(data.sender);
-                } else {
-                    typingUsers.delete(data.sender);
-            }
+    if (data.sender !== currentUser) { // don't show own typing
+        if (data.typing) {
+            typingUsers.add(data.sender);
+        } else {
+            typingUsers.delete(data.sender);
+        }
 
-            if (typingUsers.size > 0) {
-                typingDiv.innerText = Array.from(typingUsers).join(", ") + " is typing...";
-            } else {
-                typingDiv.innerText = "";
-            }
+        if (typingUsers.size > 0) {
+            typingDiv.innerText = Array.from(typingUsers).join(", ") + " is typing...";
+        } else {
+            typingDiv.innerText = "";
         }
     }
+}
+
 
 
         function toggleEmojiPicker() {
