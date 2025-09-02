@@ -1,14 +1,12 @@
-# Use lightweight Java 21 image
-FROM openjdk:21-jdk-slim
-
-# Set working directory
+# Stage 1: Build
+FROM maven:3.9.5-eclipse-temurin-21 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copy the pre-built JAR
-COPY target/chatApp-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose port 8080 (Render will override if needed)
+# Stage 2: Run
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/chatApp-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-
-# Run the JAR
 CMD ["java", "-jar", "app.jar"]
