@@ -17,3 +17,8 @@ This project demonstrates how to build a simple messaging system with a publish/
 ---
 
 ## Project Structure
+- ChatAppApplication.java # Main Spring Boot app
+- ChatController.java # Handles incoming messages
+- ChatMessage.java # Message model
+- SecurityConfig.java # Allows WebSocket endpoints
+- WebSocketConfig.java # STOMP/WebSocket configuration
