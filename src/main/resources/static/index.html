@@ -416,9 +416,11 @@
     <script>
         let stompClient = null;
         let currentUser = null;
-        let typingTimeout = null;
         let emojiPickerVisible = false;
         let onlineStatus = true;
+        let typingUsers = new Set(); // stores names of users currently typing
+        let typingTimeout = null;    // reuse your timeout for clearing typing
+
 
         function connect() {
             const socket = new SockJS(window.location.origin + '/chat');
@@ -469,8 +471,19 @@
         function notifyTyping() {
             const sender = document.getElementById('sender').value.trim();
             if (!sender) return;
-            stompClient.send("/app/typing", {}, JSON.stringify({ sender }));
+
+             // Notify that user is typing
+            stompClient.send("/app/typing", {}, JSON.stringify({ sender: sender, typing: true }));
+
+            // Clear previous timeout if any
+            clearTimeout(typingTimeout);
+
+            // Send typing=false after 2 seconds of inactivity
+            typingTimeout = setTimeout(() => {
+            stompClient.send("/app/typing", {}, JSON.stringify({ sender: sender, typing: false }));
+            }, 2000);
         }
+
 
         function showMessage(message) {
             const chatDiv = document.getElementById('chat');
@@ -496,14 +509,22 @@
 
         function showTyping(data) {
             const typingDiv = document.getElementById('typing');
-            if (data.sender !== currentUser) {
-                typingDiv.innerHTML = `${data.sender} is typing<span>.</span><span>.</span><span>.</span>`;
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => { 
-                    typingDiv.innerHTML = ''; 
-                }, 2000);
+
+            if (data.sender !== currentUser) { // avoid showing your own typing
+                if (data.typing) {
+                    typingUsers.add(data.sender);
+                } else {
+                    typingUsers.delete(data.sender);
+            }
+
+            if (typingUsers.size > 0) {
+                typingDiv.innerText = Array.from(typingUsers).join(", ") + " is typing...";
+            } else {
+                typingDiv.innerText = "";
             }
         }
+    }
+
 
         function toggleEmojiPicker() {
             const emojiPicker = document.getElementById('emoji-picker');
