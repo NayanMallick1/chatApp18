@@ -12,8 +12,13 @@ public class ChatController {
     @MessageMapping("/send")
     @SendTo("/topic/messages")
     public ChatMessage sendMessage(ChatMessage message) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
-        message.setTimestamp(LocalDateTime.now().format(formatter));
+        message.setTimestamp(LocalDateTime.now().toString());
         return message;
+    }
+
+    @MessageMapping("/typing")
+    @SendTo("/topic/typing")
+    public TypingStatus typing(TypingStatus status) {
+        return status;
     }
 }
